@@ -138,7 +138,11 @@ def upload_grok():
 
 
 def main():
-    target = (sys.argv[1].lower() if len(sys.argv) > 1 else "all")
+    arg = sys.argv[1] if len(sys.argv) > 1 else "all"
+    if arg in ("-h", "--help", "help"):
+        print(__doc__)
+        return
+    target = arg.lower()
     if target not in ("all", "chatgpt", "grok"):
         print(f"未知目标: {target}（可选 all|chatgpt|grok）")
         sys.exit(1)

@@ -181,6 +181,23 @@ python _clash_verge.py ping                    # 控制面连通性
 注册拿到的是**网页 session**（无 `refresh_token`，下游中转易 401）。这一组流程把账号升级成
 带 `refresh_token` 的正式凭据，并灌到下游中转（SUB2API / CPA）。
 
+**前置条件**
+- 已用 `register_chatgpt.py` 注册过该账号，`cookies/chatgpt/full_*.json` 存在（②靠它重登）。
+- `.env` 配好 `SUB2API_URL/EMAIL/PASSWORD`（②必需），可选 `CPA_URL/CPA_MGMT_KEY`（推 CPA）。
+- 账号最好已是 **Plus**（否则 OAuth 能成，但无 Codex 额度）——没 Plus 先走 ①。
+
+**典型一条龙**
+```bash
+# 1) 没 Plus 先用激活码开通（已是 Plus 可跳过）
+python activate_plus.py --email a@outlook.com --code BX-XXXXXXXX
+
+# 2) Codex OAuth 授权 → 同时建到 SUB2API + 推 CPA（带真 refresh_token）
+python oauth_codex.py --manual-phone --keep          # 遇 add-phone 手动填号 + 输 WhatsApp 码
+
+# 3) 可选：批量兜底上传（没走 OAuth 的旧 session，见 ③ 说明）
+python upload_tokens.py chatgpt
+```
+
 ### ① 用激活码开通 Plus / Codex 订阅（baxigpt.com）
 纯 HTTP，无需浏览器。订阅地址与激活码走环境变量 `BAXI_API` / `BAXI_CARDS`。
 ```bash
